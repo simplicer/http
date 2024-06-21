@@ -3,7 +3,7 @@
   "description": "Library to manage HTTP status codes and their descriptions.",
   "type": "library",
   "version": "1.0.0",
-  "license": "GPLv3",
+  "license": "GPL-3.0-or-later",
   "autoload": {
     "psr-4": {
       "Simplicer\\Http\\": "src/"
