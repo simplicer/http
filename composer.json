@@ -11,8 +11,7 @@
   },
   "authors": [
     {
-      "name": "Antonio Villamarin",
-      "email": "anviusr+php@gmail.com"
+      "name": "Antonio Villamarin"
     }
   ],
   "minimum-stability": "stable",
