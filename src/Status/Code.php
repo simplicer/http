@@ -298,7 +298,7 @@ class Code
      * @param string $code HTTP status code constant name
      * @param array $arguments Arguments (not used)
      * @return int HTTP status code
-     * @throws \InvalidStatusCodeException if the constant is not
+     * @throws InvalidStatusCodeException if the name is not a status code constant
      */
     public static function __callStatic(string $code, array $arguments): int
     {
@@ -319,7 +319,7 @@ class Code
      * Returns a text for the HTTP status code.
      *
      * @param int $code HTTP status code
-     * @return string Text for the given HTTP status code or an empty string if the code is unknown
+     * @return string Text for the given HTTP status code, or "Unknown Status" if the code is unknown
      */
     public static function getStatusText(int $code): string
     {
@@ -457,7 +457,7 @@ class Code
      * Returns a description for the HTTP status code.
      *
      * @param int $code HTTP status code
-     * @return string Description for the given HTTP status code or an empty string if the code is unknown
+     * @return string Description for the given HTTP status code, or "This status is unknown or not implemented" if the code is unknown
      */
     public static function getStatusDescription(int $code): string
     {
@@ -671,14 +671,14 @@ class Code
     }
 
     /**
-     * Checks if the status code is a server error response (5xx).
+     * Checks if the status code is a server error response (5xx: 500 to 599, RFC 9110 section 15.6).
      *
      * @param int $code HTTP status code
      * @return bool True if the status code is a server error, otherwise false
      */
     public static function isServerError(int $code): bool
     {
-        return $code >= self::INTERNAL_SERVER_ERROR && $code <= self::NETWORK_AUTHENTICATION_REQUIRED;
+        return $code >= self::INTERNAL_SERVER_ERROR && $code < 600;
     }
 
     /**

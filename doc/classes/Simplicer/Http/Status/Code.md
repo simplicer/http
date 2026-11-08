@@ -263,9 +263,9 @@ HTTP status code
 
 
 **Throws:**
-<p>if the constant is not</p>
+<p>if the name is not a status code constant</p>
 
-- [`InvalidStatusCodeException`](../../../InvalidStatusCodeException.md)
+- [`InvalidStatusCodeException`](./InvalidStatusCodeException.md)
 
 
 
@@ -295,7 +295,7 @@ public static getStatusText(int $code): string
 
 **Return Value:**
 
-Text for the given HTTP status code or an empty string if the code is unknown
+Text for the given HTTP status code, or "Unknown Status" if the code is unknown
 
 
 
@@ -326,7 +326,7 @@ public static getStatusDescription(int $code): string
 
 **Return Value:**
 
-Description for the given HTTP status code or an empty string if the code is unknown
+Description for the given HTTP status code, or "This status is unknown or not implemented" if the code is unknown
 
 
 
@@ -553,7 +553,7 @@ True if the status code is a client error, otherwise false
 
 ### isServerError
 
-Checks if the status code is a server error response (5xx).
+Checks if the status code is a server error response (5xx: 500 to 599, RFC 9110 section 15.6).
 
 ```php
 public static isServerError(int $code): bool

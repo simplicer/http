@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Simplicer\Http\Status\Code;
+use Simplicer\Http\Status\InvalidStatusCodeException;
 
 class StatusCodeTest extends TestCase
 {
@@ -194,5 +195,68 @@ class StatusCodeTest extends TestCase
         $this->assertEquals(100, Code::CONTINUE());
         $this->assertEquals(200, Code::OK());
         $this->assertNotEquals(300, Code::NOT_FOUND());
+    }
+
+    public function testAnUnknownStatusCodeCalledAsMethodThrowsInvalidStatusCodeException()
+    {
+        try {
+            Code::INVALID_STATUS_CODE_CONSTANT();
+            $this->fail('An unknown status code must throw InvalidStatusCodeException');
+        } catch (InvalidStatusCodeException $e) {
+            $this->assertSame('INVALID_STATUS_CODE_CONSTANT', $e->getStatusCode());
+            $this->assertSame('Invalid http status code: INVALID_STATUS_CODE_CONSTANT', $e->getMessage());
+        }
+    }
+
+    public function testTextsAndDescriptionsCannotBeCalledAsStatusCodes()
+    {
+        $this->expectException(InvalidStatusCodeException::class);
+        Code::TEXT_OK();
+    }
+
+    public function testTheExceptionChainsThePreviousThrowable()
+    {
+        $previous = new RuntimeException('cause');
+        $e = new InvalidStatusCodeException('NOPE', 'custom message', 7, $previous);
+
+        $this->assertSame('custom message', $e->getMessage());
+        $this->assertSame(7, $e->getCode());
+        $this->assertSame($previous, $e->getPrevious());
+    }
+
+    public function testEveryCodeFrom500To599IsAServerError()
+    {
+        $this->assertTrue(Code::isServerError(599));
+        $this->assertFalse(Code::isServerError(600));
+        $this->assertSame('Server Error', Code::getStatusRange(599));
+        $this->assertSame('Unknown', Code::getStatusRange(600));
+    }
+
+    public function testTheReadmeOnlyUsesMethodsThatExist()
+    {
+        $readme = file_get_contents(__DIR__ . '/../README.md');
+        preg_match_all('/Code::([A-Za-z_]+)\(/', $readme, $calls);
+        $this->assertNotEmpty($calls[1]);
+
+        foreach (array_unique($calls[1]) as $name) {
+            $isStatusCode = defined(Code::class . '::' . $name) && is_int(constant(Code::class . '::' . $name));
+            $documentedFailure = $name === 'INVALID_STATUS_CODE_CONSTANT';
+            $this->assertTrue(
+                method_exists(Code::class, $name) || $isStatusCode || $documentedFailure,
+                "README calls Code::$name(), which does not exist"
+            );
+        }
+    }
+
+    public function testTheReadmeOutputsMatchTheLibrary()
+    {
+        $readme = file_get_contents(__DIR__ . '/../README.md');
+        preg_match_all('/echo (Code::[^;]+); \/\/ Outputs: "?(.*?)"?$/m', $readme, $examples, PREG_SET_ORDER);
+        $this->assertNotEmpty($examples);
+
+        foreach ($examples as [, $expression, $expected]) {
+            $actual = eval('use Simplicer\Http\Status\Code; return ' . $expression . ';');
+            $this->assertSame($expected, (string) $actual, "README example: $expression");
+        }
     }
 }

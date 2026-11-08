@@ -24,26 +24,40 @@ echo Code::OK; // Outputs: 200
 
 ### Accessing Status Texts
 
-Use the `getText` method to get the text representation of a status code:
+Use the `getStatusText` method to get the text representation of a status code:
 
 ```php
-echo Code::getText(Code::OK); // Outputs: "OK"
+echo Code::getStatusText(Code::OK); // Outputs: "OK"
+echo Code::getStatusText(999); // Outputs: "Unknown Status"
 ```
 
 ### Accessing Status Descriptions
 
-Use the `getDescription` method to get a description of a status code:
+Use the `getStatusDescription` method to get a description of a status code:
 
 ```php
-echo Code::getDescription(Code::OK); // Outputs: "The request was successfully processed."
+echo Code::getStatusDescription(Code::OK); // Outputs: "The request was successful."
 ```
 
 ### Accessing Status Headers
 
-Use the `getStatusHeader` method to get a formatted status header:
+Use the `getHeader` method to get a formatted status line, and `getHeaderText` for the code and
+text alone:
 
 ```php
-echo Code::getStatusHeader(Code::OK); // Outputs: "HTTP/1.1 200 OK"
+echo Code::getHeader(Code::OK); // Outputs: "HTTP/1.1 200 OK"
+echo Code::getHeader(Code::NOT_FOUND, 2); // Outputs: "HTTP/2 404 NOT FOUND"
+echo Code::getHeaderText(Code::NOT_FOUND); // Outputs: "404 NOT FOUND"
+```
+
+### Checking the Class of a Status Code
+
+`isInformation`, `isSuccessful`, `isRedirection`, `isClientError` and `isServerError` check the
+class of any code (1xx to 5xx), even one without a constant. `getStatusRange` names it:
+
+```php
+var_dump(Code::isServerError(599)); // Outputs: bool(true)
+echo Code::getStatusRange(Code::NOT_FOUND); // Outputs: "Client Error"
 ```
 
 ### Validating Status Codes
@@ -87,6 +101,16 @@ try {
     echo "Invalid status code: " . $e->getStatusCode() . "\n";
 }
 ```
+
+## Tests
+
+```sh
+composer install
+composer test
+```
+
+The tests fail on any PHP deprecation, notice or warning, and they also run the examples of this
+README.
 
 ## More information
 
